@@ -1,0 +1,457 @@
+{
+ "metadata": {
+  "name": "pandas testing"
+ },
+ "nbformat": 3,
+ "nbformat_minor": 0,
+ "worksheets": [
+  {
+   "cells": [
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "import numpy as np\nimport pandas as pd\nfrom pandas import DataFrame, Series\nimport random",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 59
+    },
+    {
+     "cell_type": "markdown",
+     "metadata": {},
+     "source": "Genotypes and phenotypes\n========================\n\nGenotypes are biallelic in the form of (0, 1) where 0 is a recessive allele and 1 is a domninant allele. Each genotype is associated with a character of the organism (e.g., seed color) and recessive and dominant phenotypes (e.g., \"green\" and \"yellow\")."
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "def create_parental_population(n, is_dominant):\n    if is_dominant:\n        return np.ones((n, 2), dtype=np.integer)\n    else:\n        return np.zeros((n, 2), dtype=np.integer)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 25
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "p1_dominant = create_parental_population(10, True)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 28
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "p1_recessive = create_parental_population(10, False)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 27
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "p1_dominant",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 29,
+       "text": "array([[1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1],\n       [1, 1]])"
+      }
+     ],
+     "prompt_number": 29
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "p1_recessive",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 30,
+       "text": "array([[0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0],\n       [0, 0]])"
+      }
+     ],
+     "prompt_number": 30
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "def cross_populations(population1, population2):\n    return np.array(\n        zip(\n            np.apply_along_axis(random.choice, 1, population1),\n            np.apply_along_axis(random.choice, 1, population2)\n        )\n    )",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 52
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f1 = cross_populations(p1_dominant, p1_recessive)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 55
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f1",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 56,
+       "text": "array([[1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0],\n       [1, 0]])"
+      }
+     ],
+     "prompt_number": 56
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2 = cross_populations(f1, f1)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 57
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 58,
+       "text": "array([[0, 0],\n       [0, 1],\n       [0, 1],\n       [0, 0],\n       [0, 1],\n       [1, 1],\n       [0, 0],\n       [0, 1],\n       [1, 1],\n       [1, 0]])"
+      }
+     ],
+     "prompt_number": 58
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "np.cumsum(f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 60,
+       "text": "array([0, 0, 0, 1, 1, 2, 2, 2, 2, 3, 4, 5, 5, 5, 5, 6, 7, 8, 9, 9])"
+      }
+     ],
+     "prompt_number": 60
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "np.sum(f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 61,
+       "text": "9"
+      }
+     ],
+     "prompt_number": 61
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "np.apply_along_axis(sum, 1, f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 62,
+       "text": "array([0, 1, 1, 0, 1, 2, 0, 1, 2, 1])"
+      }
+     ],
+     "prompt_number": 62
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "np.count_nonzero?",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 63
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2.sum()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 64,
+       "text": "9"
+      }
+     ],
+     "prompt_number": 64
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2.sort()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 65
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 66,
+       "text": "array([[0, 0],\n       [0, 1],\n       [0, 1],\n       [0, 0],\n       [0, 1],\n       [1, 1],\n       [0, 0],\n       [0, 1],\n       [1, 1],\n       [0, 1]])"
+      }
+     ],
+     "prompt_number": 66
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df = DataFrame(f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 68
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>0</th>\n      <th>1</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 0</td>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 0</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 0</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td> 0</td>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td> 0</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td> 1</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td> 0</td>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td> 0</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td> 1</td>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td> 0</td>\n      <td> 1</td>\n    </tr>\n  </tbody>\n</table>\n<p>10 rows \u00d7 2 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 69,
+       "text": "   0  1\n0  0  0\n1  0  1\n2  0  1\n3  0  0\n4  0  1\n5  1  1\n6  0  0\n7  0  1\n8  1  1\n9  0  1\n\n[10 rows x 2 columns]"
+      }
+     ],
+     "prompt_number": 69
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df = DataFrame(Series(np.apply_along_axis(sum, 1, f2)), columns=[\"genotypes\"])",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 100
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td> 2</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td> 0</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td> 1</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td> 2</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td> 1</td>\n    </tr>\n  </tbody>\n</table>\n<p>10 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 101,
+       "text": "   genotypes\n0          0\n1          1\n2          1\n3          0\n4          1\n5          2\n6          0\n7          1\n8          2\n9          1\n\n[10 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 101
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df.groupby(\"genotypes\").count()",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 3</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 5</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 2</td>\n    </tr>\n  </tbody>\n</table>\n<p>3 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 102,
+       "text": "           genotypes\ngenotypes           \n0                  3\n1                  5\n2                  2\n\n[3 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 102
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f2_df.groupby(\"genotypes\").count().apply(lambda x: x / float(f2_df[\"genotypes\"].sum()))",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 0.333333</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 0.555556</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 0.222222</td>\n    </tr>\n  </tbody>\n</table>\n<p>3 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 106,
+       "text": "           genotypes\ngenotypes           \n0           0.333333\n1           0.555556\n2           0.222222\n\n[3 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 106
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "def get_genotype_frequencies(population):\n    df = DataFrame(Series(np.apply_along_axis(sum, 1, population)), columns=[\"genotypes\"])\n    counts = df.groupby(\"genotypes\").count()\n    return counts.apply(lambda x: x / float(counts.sum()))",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 112
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "get_genotype_frequencies(f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 0.3</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 0.5</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 0.2</td>\n    </tr>\n  </tbody>\n</table>\n<p>3 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 114,
+       "text": "           genotypes\ngenotypes           \n0                0.3\n1                0.5\n2                0.2\n\n[3 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 114
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "get_genotype_frequencies(f1)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1</th>\n      <td> 1</td>\n    </tr>\n  </tbody>\n</table>\n<p>1 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 115,
+       "text": "           genotypes\ngenotypes           \n1                  1\n\n[1 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 115
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "get_genotype_frequencies(p1_dominant)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2</th>\n      <td> 1</td>\n    </tr>\n  </tbody>\n</table>\n<p>1 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 116,
+       "text": "           genotypes\ngenotypes           \n2                  1\n\n[1 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 116
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "get_genotype_frequencies(p1_recessive)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 1</td>\n    </tr>\n  </tbody>\n</table>\n<p>1 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 117,
+       "text": "           genotypes\ngenotypes           \n0                  1\n\n[1 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 117
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f3 = cross_populations(f2, f2)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [],
+     "prompt_number": 118
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "f3",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 119,
+       "text": "array([[0, 0],\n       [0, 0],\n       [1, 1],\n       [0, 0],\n       [1, 1],\n       [1, 1],\n       [0, 0],\n       [0, 1],\n       [1, 1],\n       [0, 1]])"
+      }
+     ],
+     "prompt_number": 119
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "get_genotype_frequencies(f3)",
+     "language": "python",
+     "metadata": {},
+     "outputs": [
+      {
+       "html": "<div style=\"max-height:1000px;max-width:1500px;overflow:auto;\">\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>genotypes</th>\n    </tr>\n    <tr>\n      <th>genotypes</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td> 0.4</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td> 0.2</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td> 0.4</td>\n    </tr>\n  </tbody>\n</table>\n<p>3 rows \u00d7 1 columns</p>\n</div>",
+       "metadata": {},
+       "output_type": "pyout",
+       "prompt_number": 120,
+       "text": "           genotypes\ngenotypes           \n0                0.4\n1                0.2\n2                0.4\n\n[3 rows x 1 columns]"
+      }
+     ],
+     "prompt_number": 120
+    },
+    {
+     "cell_type": "code",
+     "collapsed": false,
+     "input": "",
+     "language": "python",
+     "metadata": {},
+     "outputs": []
+    }
+   ],
+   "metadata": {}
+  }
+ ]
+}
